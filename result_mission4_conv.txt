@@ -1,0 +1,206 @@
+A：2层纯卷积convNet（只有卷积pooling）
+    1：batch_size = 16 patch_size = 5 depth = 16 num_hidden = 64 num_steps = 1001
+	    Minibatch loss at step 1000: 0.499869
+		Minibatch accuracy: 81.2%
+		Validation accuracy: 84.4%
+		Test accuracy: 90.4%
+
+	2：batch_size = 16 patch_size = 5 depth = 16 num_hidden = 64 num_steps = 10001
+		Minibatch loss at step 10000: 0.308830
+		Minibatch accuracy: 93.8%
+		Validation accuracy: 88.8%
+		Test accuracy: 94.2%
+		(改变batch_size的大小的作用与改变num_steps的作用类似的但是又不相同。因为num_step变化的时候，改变梯度下降的次数也在发生变化。)
+	3：batch_size = 128 patch_size = 5 depth = 16 num_hidden = 64 num_steps = 30001
+		Minibatch loss at step 30000: 0.253379
+		Minibatch accuracy: 92.2%
+		Validation accuracy: 91.1%
+		Test accuracy: 95.8%
+
+	4：batch_size = 128 patch_size = 5 depth = 16 num_hidden = 64 num_steps = 50001
+		Initialized
+		Minibatch loss at step 0: 3.152298
+		Minibatch accuracy: 6.2%
+		Validation accuracy: 10.0%
+		Minibatch loss at step 10000: 0.466997
+		Minibatch accuracy: 81.2%
+		Validation accuracy: 88.6%
+		Minibatch loss at step 20000: 0.095900
+		Minibatch accuracy: 100.0%
+		Validation accuracy: 90.2%
+		Minibatch loss at step 30000: 0.069419
+		Minibatch accuracy: 100.0%
+		Validation accuracy: 90.5%
+		Minibatch loss at step 40000: 0.723544
+		Minibatch accuracy: 81.2%
+		Validation accuracy: 90.8%
+		Minibatch loss at step 50000: 0.077577
+		Minibatch accuracy: 100.0%
+		Validation accuracy: 90.6%
+		Test accuracy: 95.5%
+		这里存在严重的overfitting。
+
+	5：batch_size = 128 patch_size = 5 depth = 16 num_hidden = 64 num_steps = 3001
+		Initialized
+		Minibatch loss at step 0: 4.052921
+		Minibatch accuracy: 5.5%
+		Validation accuracy: 10.2%
+		Minibatch loss at step 1000: 0.470801
+		Minibatch accuracy: 82.8%
+		Validation accuracy: 85.3%
+		Minibatch loss at step 2000: 0.338304
+		Minibatch accuracy: 90.6%
+		Validation accuracy: 86.7%
+		Minibatch loss at step 3000: 0.492647
+		Minibatch accuracy: 82.0%
+		Validation accuracy: 87.8%
+		Test accuracy: 93.3%
+
+B：卷积+pool+卷积+pool，卷积均不减小输出图片的大小，通过池化来减小。
+		1： pool_1 = tf.nn.max_pool(hidden_1, [1, 2, 2, 1], [1, 2, 2, 1], padding='SAME')
+		    batch_size = 128 patch_size = 5 depth = 16 num_hidden = 64 num_steps = 1001
+			    Initialized
+				Minibatch loss at step 0: 3.137758
+				Minibatch accuracy: 10.9%
+				Validation accuracy: 10.1%
+				Minibatch loss at step 1000: 0.429711
+				Minibatch accuracy: 89.1%
+				Validation accuracy: 86.5%
+				Test accuracy: 91.7%
+
+		2： pool_1 = tf.nn.max_pool(hidden_1, [1, 2, 2, 1], [1, 2, 2, 1], padding='SAME')
+		    batch_size = 128 patch_size = 5 depth = 16 num_hidden = 64 num_steps = 30001	
+			    Minibatch loss at step 30000: 0.281252
+				Minibatch accuracy: 92.2%
+				Validation accuracy: 91.2%
+				Test accuracy: 95.9%			
+
+		3： pool_1 = tf.nn.max_pool(hidden_1, [1, 2, 2, 1], [1, 2, 2, 1], padding='SAME')
+			batch_size = 128 patch_size = 5 depth = 32 num_hidden = 64 num_steps = 30001
+			深度加深后运算速度明显变慢。
+				Minibatch loss at step 30000: 0.248200
+				Minibatch accuracy: 93.8%
+				Validation accuracy: 91.6%
+				Test accuracy: 96.2%
+			但是结果略微提高了一点。
+
+
+C：卷积+pool+卷积+pool+hidden1(dropout0.5)(64)+hiddent2(dropout0.5)(64) => 10
+		1:batch_size = 128 patch_size = 5 depth = 32 num_hidden = 64 num_steps = 30001
+			Minibatch loss at step 30000: 0.328892
+			Minibatch accuracy: 89.1%
+			Validation accuracy: 89.7%
+			Test accuracy: 94.8%
+
+		2: batch_size = 128 patch_size = 5 depth = 32 num_hidden = 64 num_steps = 30001
+		    dropout 分别为0.5和0.9
+		    Minibatch loss at step 30000: 0.287057
+			Minibatch accuracy: 91.4%
+			Validation accuracy: 89.6%
+			Test accuracy: 94.8%
+
+		3：batch_size = 128 patch_size = 5 depth1 = 32 depth2 = 64 num_hidden1 = 512 num_hidden2 = 100
+		   dropout 分别为0.5和0.9
+		   Minibatch loss at step 30000: 0.280296
+			Minibatch accuracy: 91.4%
+			Validation accuracy: 91.0%
+			Test accuracy: 95.7%
+
+		4：batch_size = 128 patch_size = 5 depth1 = 32 depth2 = 64 num_hidden1 = 512 num_hidden2 = 100
+		   dropout 分别为1和1
+
+		   Minibatch loss at step 30000: 0.137133
+			Minibatch accuracy: 95.3%
+			Validation accuracy: 91.1%
+			Test accuracy: 96.0%
+
+		5：batch_size = 128 patch_size = 5 depth1 = 64 depth2 = 128 num_hidden1 = 512 num_hidden2 = 100 dropout 分别为1和1
+			Minibatch loss at step 27000: 0.304603
+			Minibatch accuracy: 89.8%
+			Validation accuracy: 91.0%
+			Minibatch loss at step 28000: 0.369889
+			Minibatch accuracy: 87.5%
+			Validation accuracy: 91.2%
+			Minibatch loss at step 29000: 0.174318
+			Minibatch accuracy: 94.5%
+			Validation accuracy: 91.1%
+			Minibatch loss at step 30000: 0.266008
+			Minibatch accuracy: 91.4%
+			Validation accuracy: 91.2%
+			Test accuracy: 96.1%
+
+		6：batch_size = 128 patch_size = 5 depth1 = 64 depth2 = 128 num_hidden1 = 512 num_hidden2 = 100 dropout 分别为0.6和1
+			Minibatch loss at step 28000: 0.416201
+			Minibatch accuracy: 89.1%
+			Validation accuracy: 91.1%
+			Test accuracy: 96.0%
+			Minibatch loss at step 29000: 0.158049
+			Minibatch accuracy: 95.3%
+			Validation accuracy: 91.0%
+			Test accuracy: 95.7%
+			Minibatch loss at step 30000: 0.294603
+			Minibatch accuracy: 92.2%
+			Validation accuracy: 91.0%
+			Test accuracy: 95.7%
+
+		6：batch_size = 128 patch_size = 5 depth1 = 64 depth2 = 128 num_hidden1 = 512 num_hidden2 = 100 dropout 分别为0.6和1 加上速率下降。
+			Minibatch loss at step 30000: 0.262012
+			Minibatch accuracy: 94.5%
+			Validation accuracy: 91.2%
+			Test accuracy: 96.0%
+
+		7；仿照leNet5：batch_size = 128 patch_size = 5 depth1 = 6（conv） depth2 = 6（池化） depth3 = 16（conv） depth4 = 16（池化） num_hidden1 = 120 num_hidden2 = 84 无dropout
+			Minibatch loss at step 28000: 0.367660
+			Minibatch accuracy: 89.8%
+			Validation accuracy: 91.5%
+			Test accuracy: 96.0%
+			Minibatch loss at step 29000: 0.104065
+			Minibatch accuracy: 97.7%
+			Validation accuracy: 91.5%
+			Test accuracy: 96.0%
+			Minibatch loss at step 30000: 0.208956
+			Minibatch accuracy: 94.5%
+			Validation accuracy: 91.6%
+			Test accuracy: 96.0%
+
+		8；仿照leNet5：batch_size = 128 patch_size = 5 depth1 = 6（conv） depth2 = 6（池化） depth3 = 16（conv） depth4 = 16（池化） num_hidden1 = 120 num_hidden2 = 84 dropout0.5和0.8
+			Minibatch loss at step 30000: 0.310244
+			Minibatch accuracy: 89.1%
+			Validation accuracy: 89.8%
+			Test accuracy: 94.9%
+
+		9；仿照leNet5：batch_size = 128 patch_size = 5 depth1 = 32（conv） depth2 = 32（池化） depth3 = 64（conv） depth4 = 64（池化） num_hidden1 = 1024 num_hidden2 = 512 num_hidden2 = 256 dropout0.5和0.8和0.9
+			Minibatch loss at step 30000: 0.347118
+			Minibatch accuracy: 91.4%
+			Validation accuracy: 90.2%
+			Test accuracy: 95.1%
+
+		10；仿照leNet5：batch_size = 128 patch_size = 5 depth1 = 32（conv） depth2 = 32（池化） depth3 = 64（conv） depth4 = 64（池化） num_hidden1 = 1024 num_hidden2 = 512 num_hidden2 = 256 dropout0.5和0.8和0.9。 但是改变了stddev 的值。 感觉这个值对训练的影响很大。要弄清楚。
+			Minibatch loss at step 28000: 0.247177
+			Minibatch accuracy: 93.8%
+			Validation accuracy: 91.9%
+			Test accuracy: 96.5%
+			Minibatch loss at step 29000: 0.114584
+			Minibatch accuracy: 97.7%
+			Validation accuracy: 92.2%
+			Test accuracy: 96.7%
+			Minibatch loss at step 30000: 0.173166
+			Minibatch accuracy: 96.1%
+			Validation accuracy: 92.0%
+			Test accuracy: 96.7%
+
+		11；仿照leNet5：batch_size = 128 patch_size = 5 depth1 = 32（conv） depth2 = 32（池化） depth3 = 64（conv） depth4 = 64（池化） num_hidden1 = 1024 num_hidden2 = 512 num_hidden2 = 256 dropout0.8和0.8和0.9。 但是改变了stddev 的值。 感觉这个值对训练的影响很大。要弄清楚。
+			Minibatch loss at step 28000: 0.176675
+			Minibatch accuracy: 93.8%
+			Validation accuracy: 92.2%
+			Test accuracy: 96.8%
+			Minibatch loss at step 29000: 0.101862
+			Minibatch accuracy: 96.1%
+			Validation accuracy: 92.5%
+			Test accuracy: 96.8%
+			Minibatch loss at step 30000: 0.129446
+			Minibatch accuracy: 96.1%
+			Validation accuracy: 92.5%
+			Test accuracy: 97.0%（第一次突破97值得纪念）
+
+		12；仿照leNet5：batch_size = 128 patch_size = 5 depth1 = 32（conv） depth2 = 32（池化） depth3 = 64（conv） depth4 = 64（池化） num_hidden1 = 1024 num_hidden2 = 512 num_hidden2 = 256 dropout1和1和1。 但是改变了stddev 的值。 感觉这个值对训练的影响很大。要弄清楚。
